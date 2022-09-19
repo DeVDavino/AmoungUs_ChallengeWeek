@@ -4,7 +4,7 @@ import numpy as np
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
 cap = cv2.VideoCapture(0)
-template = cv2.imread('data/red1.png',0)
+template = cv2.imread('data/sus4.png',0)
 assert not isinstance(template,type(None)), 'image not found'
 w, h = template.shape[::-1]
 
@@ -36,7 +36,7 @@ while(cap.isOpened()):
     res = cv2.matchTemplate(frame,template,method)
     
     maxv = np.max(res)
-    if maxv>0.20:
+    if maxv>0.80:
       min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
       top_left = max_loc
@@ -49,7 +49,6 @@ while(cap.isOpened()):
      
     # Display the resulting frame
     cv2.imshow('Frame',frame)
-    cv2.imshow('Track Laser', frame)
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(25) & 0xFF == ord('q'):
