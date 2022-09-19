@@ -16,8 +16,16 @@ if (cap.isOpened()== False):
 while(cap.isOpened()):
   # Capture frame-by-frame
   ret, frame = cap.read()
+  
   if ret == True:
-
+    #--------------------- contour detectie --------------------- 
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    lower_red = np.array([0, 0, 255])
+    upper_red = np.array([255, 255, 255])
+    mask = cv2.inRange(hsv, lower_red, upper_red)
+    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
+    cv2.circle(frame, maxLoc, 20, (0, 0, 255), 2, cv2.LINE_AA)
+    # ------------------------------------------------------------
     method = eval('cv2.TM_CCOEFF_NORMED')
 
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
@@ -41,6 +49,7 @@ while(cap.isOpened()):
      
     # Display the resulting frame
     cv2.imshow('Frame',frame)
+    cv2.imshow('Track Laser', frame)
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(25) & 0xFF == ord('q'):
