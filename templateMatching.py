@@ -4,7 +4,9 @@ import numpy as np
 # Create a VideoCapture object and read from input file
 # If the input is the camera, pass 0 instead of the video file name
 cap = cv2.VideoCapture(0)
-template = cv2.imread('data/sus4.png',0)
+
+# Load template image
+template = cv2.imread('data/red2.png',0)
 assert not isinstance(template,type(None)), 'image not found'
 w, h = template.shape[::-1]
 
@@ -18,20 +20,12 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   
   if ret == True:
-    #--------------------- contour detectie --------------------- 
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_red = np.array([0, 0, 255])
-    upper_red = np.array([255, 255, 255])
-    mask = cv2.inRange(hsv, lower_red, upper_red)
-    (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
-    cv2.circle(frame, maxLoc, 20, (0, 0, 255), 2, cv2.LINE_AA)
-    # ------------------------------------------------------------
     method = eval('cv2.TM_CCOEFF_NORMED')
 
+    # Template matching
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-    # template = cv2.cvtColor(template, cv2.COLOR_RGB2GRAY)
 
-    frame = cv2.resize(frame, (640, 360))
+    # frame = cv2.resize(frame, (640, 360))
 
     res = cv2.matchTemplate(frame,template,method)
     
