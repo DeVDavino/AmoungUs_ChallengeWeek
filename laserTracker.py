@@ -26,6 +26,6 @@ while (1):
 
     #condition to terminate the code from running (q)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        Break
+        break
 
 cap.release()
