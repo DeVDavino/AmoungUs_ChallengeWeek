@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 pts = []
 while (1):
@@ -26,6 +26,6 @@ while (1):
 
     #condition to terminate the code from running (q)
     if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        Break
 
 cap.release()
