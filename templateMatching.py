@@ -25,7 +25,7 @@ while(cap.isOpened()):
     # Template matching
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-    # frame = cv2.resize(frame, (640, 360))
+    frame = cv2.resize(frame, (768, 512))
 
     res = cv2.matchTemplate(frame,template,method)
     
@@ -35,7 +35,7 @@ while(cap.isOpened()):
 
       top_left = max_loc
       bottom_right = (top_left[0] + w, top_left[1] + h)
-      cv2.rectangle(frame,top_left, bottom_right, 255, 2)
+      cv2.rectangle(frame,top_left, bottom_right, 0, 2)
       cv2.putText(frame, 'Sus crew detected', (top_left[0],top_left[1]-10), 
 				cv2.FONT_HERSHEY_PLAIN, 1.0, (255,255,255))
 
