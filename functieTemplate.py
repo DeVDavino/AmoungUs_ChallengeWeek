@@ -1,10 +1,7 @@
 import cv2
 import numpy as np
 
-# Create a VideoCapture object and read from input file
-# If the input is the camera, pass 0 instead of the video file name
-cap = cv2.VideoCapture(0)
-
+#------------------------ Template Matching ----------------------------
 def templateMatching(frame):
   # Load template image
   template = cv2.imread('data/red2.png',0)
@@ -15,9 +12,11 @@ def templateMatching(frame):
   method = eval('cv2.TM_CCOEFF_NORMED')
 
   # Template matching
-  frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-  frame = cv2.resize(frame, (768, 512))
-  res = cv2.matchTemplate(frame,template,method)
+  templateFrame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+  templateFrame = cv2.resize(templateFrame, (768, 512))
+  res = cv2.matchTemplate(templateFrame,template,method)
+  
+  data = []
   
   maxv = np.max(res)
   if maxv>0.80:
@@ -27,18 +26,45 @@ def templateMatching(frame):
     bottom_right = (top_left[0] + w, top_left[1] + h)
     
     # Drawing bounding box and text
-    cv2.rectangle(frame,top_left, bottom_right, 255, 2)
-    cv2.putText(frame, 'Sus detected', (top_left[0],top_left[1]-10), 
+    cv2.rectangle(templateFrame,top_left, bottom_right, 255, 2)
+    cv2.putText(templateFrame, 'Sus detected', (top_left[0],top_left[1]-10), 
               cv2.FONT_HERSHEY_PLAIN, 1.0, (255,255,255))
 
     # Getting centre of Among us
-    rect1x, rect1y = ((top_left[0]+bottom_right[0])/2, (top_left[1]+bottom_right[1])/2)
-    rect1center = int(rect1x),int(rect1y)
+    rectx, recty = ((top_left[0]+bottom_right[0])/2, (top_left[1]+bottom_right[1])/2)
+    rectcenter = int(rectx),int(recty)
+    data.append(rectcenter)
     # Show centre in frame
-    cv2.circle(frame, rect1center, 20, (255,255,255), 3)
+    cv2.circle(templateFrame, rect1center, 20, (255,255,255), 3)
 
-    template = frame[top_left[1]:top_left[1]+h,top_left[0]:top_left[0]+w]
+    template = templateFrame[top_left[1]:top_left[1]+h,top_left[0]:top_left[0]+w]
+    data.append(templateFrame)
+  return data
 
+#------------------------ Laser ----------------------------
+def laserDetection(frame):
+  #change the color space
+  hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+  laserFrame = frame
+
+  #Lower boundary values for HSV
+  #Upper boundary values for HSV
+  lower_red = np.array([0, 0, 255])
+  upper_red = np.array([255, 255, 255])
+  #create a mask using the selected color range
+  mask = cv2.inRange(hsv, lower_red, upper_red)
+  (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(mask)
+  
+  #create a circle around the mask within the frame
+  cv2.circle(laserFrame, maxLoc, 20, (255, 255, 255), 2, cv2.LINE_AA)
+  cv2.imshow('Track Laser', laserFrame)
+  #maxLoc is the x,y values of the drawn circle around the laser
+  return laserFrame, maxLoc
+
+#------------------------ Main ----------------------------
+# Create a VideoCapture object and read from input file
+# If the input is the camera, pass 0 instead of the video file name
+cap = cv2.VideoCapture(0)
 
 # Check if camera opened successfully
 if (cap.isOpened()== False): 
@@ -51,10 +77,12 @@ while(cap.isOpened()):
   
   if ret == True:
     # Funcion calls here
-    frame = templateMatching(frame)
+    templateMatchingFrame, rectangleCentre = templateMatching(frame)
+    laserDetectionFrame, circleCentre = laserDetection(frame)
      
     # Display the resulting frame
-    cv2.imshow('Frame',frame)
+    cv2.imshow('Frame Template Matching', templateMatchingFrame)
+    cv2.imshow('Frame Laser', laserDetectionFrame)
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(25) & 0xFF == ord('q'):
