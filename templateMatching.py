@@ -37,7 +37,7 @@ while(cap.isOpened()):
       bottom_right = (top_left[0] + w, top_left[1] + h)
       cv2.rectangle(frame,top_left, bottom_right, 0, 2)
       cv2.putText(frame, 'Sus crew detected', (top_left[0],top_left[1]-10), 
-				cv2.FONT_HERSHEY_PLAIN, 1.0, (255,255,255))
+                cv2.FONT_HERSHEY_PLAIN, 1.0, (255,255,255))
 
       template = frame[top_left[1]:top_left[1]+h,top_left[0]:top_left[0]+w]
      
