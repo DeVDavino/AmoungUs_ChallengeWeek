@@ -1,5 +1,13 @@
 import cv2
 import numpy as np
+import RPi.GPIO as GPIO 
+import time
+
+GPIO.setmode(GPIO.BOARD)
+#set servo on pin 11
+GPIO.setup(11,GPIO.OUT)
+# 50hz pulse
+servo1 = GPIO.PWM(11,50)
 
 #------------------------ Template Matching ----------------------------
 def templateMatching(frame):
@@ -99,3 +107,34 @@ cap.release()
 
 # Closes all the frames
 cv2.destroyAllWindows()
+
+# Servo section ---------------------------------------------------------------------
+servo1.start(0)
+
+print("wait for 2 seconds")
+time.sleep(2)
+
+print("Rotating 180 degrees in 10 steps")
+
+duty = 2
+
+
+while duty <= 12:
+  servo1.ChangeDutyCycle(duty)
+  time.sleep(1)
+  duty = duty + 1
+
+time.sleep(2)
+
+print("Turning back to 0 degrees")
+servo1.ChangeDutyCycle(7)
+time.sleep(2)
+
+print("Turning back to 0 degrees")
+servo1.ChangeDutyCycle(2)
+time.sleep(0.5)
+servo1.ChangeDutyCycle(0)
+
+servo1.stop()
+GPIO.cleanup()
+#-------------------------------------------------------------------------------------------------
