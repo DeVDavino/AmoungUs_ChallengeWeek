@@ -20,24 +20,31 @@ while(cap.isOpened()):
   ret, frame = cap.read()
   
   if ret == True:
+    # Template matching method
     method = eval('cv2.TM_CCOEFF_NORMED')
 
     # Template matching
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-
     frame = cv2.resize(frame, (768, 512))
-
     res = cv2.matchTemplate(frame,template,method)
     
     maxv = np.max(res)
     if maxv>0.80:
+      # Coordinates
       min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
       top_left = max_loc
       bottom_right = (top_left[0] + w, top_left[1] + h)
-      cv2.rectangle(frame,top_left, bottom_right, 0, 2)
-      cv2.putText(frame, 'Sus crew detected', (top_left[0],top_left[1]-10), 
+      
+      # Drawing bounding box and text
+      cv2.rectangle(frame,top_left, bottom_right, 255, 2)
+      cv2.putText(frame, 'Sus detected', (top_left[0],top_left[1]-10), 
                 cv2.FONT_HERSHEY_PLAIN, 1.0, (255,255,255))
+
+      # Getting centre of Among us
+      rect1x, rect1y = ((top_left[0]+bottom_right[0])/2, (top_left[1]+bottom_right[1])/2)
+      rect1center = int(rect1x),int(rect1y)
+      # Show centre in frame
+      cv2.circle(frame, rect1center, 20, (255,255,255), 3)
 
       template = frame[top_left[1]:top_left[1]+h,top_left[0]:top_left[0]+w]
      
